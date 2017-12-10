@@ -7,12 +7,12 @@ function getUserWeights(req, res) {
                 return res.json(weights);
             }
             return res.json({
-                message: "Could not find weights for user " + req.user.name
+                message: "Could not find weights for user " + req.user.name + "."
             });
         })
         .catch(function (error) {
             return res.json({
-                message: "Error retrieving weights for user " + req.user.name
+                message: "Error retrieving weights for user " + req.user.name + "."
             });
         });
 }
@@ -27,17 +27,17 @@ function addWeight(req, res) {
                     return res.json(weight);
                 }
                 return res.json({
-                    message: "Could not add weight for user " + req.user.name
+                    message: "Could not add weight for user " + req.user.name + "."
                 });
             })
             .catch(function (error) {
                 return res.json({
-                    message: "Error adding weight for user " + req.user.name
+                    message: "Error adding weight for user " + req.user.name + "."
                 });
             });
     } else {
         return res.json({
-            message: "Weight not given"
+            message: "Weight not given" + "."
         });
     }
 }

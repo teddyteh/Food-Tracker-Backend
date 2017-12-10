@@ -5,6 +5,7 @@ var express = require('express'),
     usersController = require('./api/controllers/usersController.js'),
     weightsController = require('./api/controllers/weightsController.js'),
     foodsController = require('./api/controllers/foodsController.js'),
+    entriesController = require('./api/controllers/entriesController.js'),
     bodyParser = require('body-parser'),
     jsonWebToken = require('jsonwebtoken');
 
@@ -62,6 +63,12 @@ router.route('/foods')
 
 router.route('/addFood')
     .post(mainController.loginRequired, foodsController.addFood);
+
+router.route('/entries')
+    .post(mainController.loginRequired, entriesController.getUserEntries);
+
+router.route('/addEntry')
+    .post(mainController.loginRequired, entriesController.addEntry);
 
 router.route('/test')
     .get(mainController.loginRequired, mainController.test);
