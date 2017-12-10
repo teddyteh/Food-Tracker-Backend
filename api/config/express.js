@@ -1,4 +1,4 @@
-module.exports = function (app, config) {
+module.exports = function (app, express, config) {
   // BASE SETUP
   // =============================================================================
 
@@ -11,5 +11,8 @@ module.exports = function (app, config) {
     extended: true
   }));
   app.use(bodyParser.json());
+
+  // Serve static files from public folder
+  app.use(express.static('public'));
 
 };

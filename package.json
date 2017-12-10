@@ -23,6 +23,7 @@
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "express-api-doc": "0.0.12",
     "glob": "^7.1.2",
     "jsonwebtoken": "^8.1.0",
     "method-override": "^2.3.10",

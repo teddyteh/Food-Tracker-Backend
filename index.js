@@ -11,7 +11,7 @@ var express = require('express'),
 
 var app = express();
 
-require('./api/config/express')(app, config);
+require('./api/config/express')(app, express, config);
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -46,27 +46,78 @@ router.get('/', function (req, res) {
 });
 
 // more routes for our API will happen here
+/**
+ * @api {post} /register Register a user
+ * @apiName Register
+ * @apiGroup User
+ * @apiParam {Object[]} user
+ * @apiParam {String} user.first_name
+ * @apiParam {String} user.last_name
+ * @apiParam {String} user.email
+ * @apiParam {String} user.password
+ */
 router.route('/register')
     .post(usersController.register);
 
+/**
+ * @api {post} /login Login a user
+ * @apiName Login
+ * @apiGroup User
+ * @apiParam {String} user.email
+ * @apiParam {String} user.password
+ */
 router.route('/login')
     .post(usersController.login);
 
+/**
+ * @api {post} /weights Get weights for a user
+ * @apiName Get weights
+ * @apiGroup Weights
+ */
 router.route('/weights')
     .post(mainController.loginRequired, weightsController.getUserWeights);
 
+/**
+ * @api {post} /addWeight Add weight for a user
+ * @apiName Add weight
+ * @apiGroup Weights
+ * @apiParam {Float} weight
+ */
 router.route('/addWeight')
     .post(mainController.loginRequired, weightsController.addWeight);
 
+/**
+ * @api {post} /foods Get foods
+ * @apiName Get foods
+ * @apiGroup Foods
+ * @apiParam {Integer} pageNumber
+ */
 router.route('/foods')
     .post(mainController.loginRequired, foodsController.getFoods);
 
+/**
+ * @api {post} /addFood Add a food
+ * @apiName Add food
+ * @apiGroup Foods
+ * @apiParam {String} name
+ * @apiParam {String} description
+ */
 router.route('/addFood')
     .post(mainController.loginRequired, foodsController.addFood);
 
+/**
+ * @api {post} /entries Get entries for a user
+ * @apiName Get entries
+ * @apiGroup Entries
+ */
 router.route('/entries')
     .post(mainController.loginRequired, entriesController.getUserEntries);
 
+/**
+ * @api {post} /addEntry Add entry for a user
+ * @apiName Get entries
+ * @apiGroup Entries
+ */
 router.route('/addEntry')
     .post(mainController.loginRequired, entriesController.addEntry);
 
