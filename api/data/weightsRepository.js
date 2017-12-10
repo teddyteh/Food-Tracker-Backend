@@ -7,6 +7,13 @@ var WeightsRepository = {
                 user: user
             }
         })
+    },
+
+    addWeight: function(user, weight) {
+        return db.Weight.create({
+            user: user,
+            weight: weight
+        });
     }
 }
 

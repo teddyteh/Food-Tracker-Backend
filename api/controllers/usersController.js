@@ -33,6 +33,7 @@ function login(req, res) {
                         return res.json({
                             token: jwt.sign({
                                 id: user.id,
+                                name: user.first_name + " " + user.last_name,
                                 email: user.email
                             }, 'secret', {
                                 expiresIn: '1h'
