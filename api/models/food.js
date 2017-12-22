@@ -1,28 +1,23 @@
 module.exports = function (sequelize, DataTypes) {
-  const User = sequelize.import(__dirname + "/User");
-  const Nutrient = sequelize.import(__dirname + "/Nutrient");
+    var Food = sequelize.define('Food', {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        name: DataTypes.STRING,
+        description: DataTypes.STRING
+    });
 
-  var Food = sequelize.define('Food', {
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
-    },
-    name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    user: {
-      type: DataTypes.UUID,
+    Food.associate = function (models) {
+        Food.belongsTo(models.UserProfile, {
+            foreignKey: 'created_by'
+        });
+        Food.belongsToMany(models.Nutrient, {
+            through: 'FoodNutrient',
+            foreignKey: 'food'
+        });
+    };
 
-      references: {
-        model: User,
-
-        key: 'id'
-      }
-    }
-  });
-
-  Food.hasMany(Nutrient, { as: 'nutrients'});
-
-  return Food;
-
+    return Food;
 };

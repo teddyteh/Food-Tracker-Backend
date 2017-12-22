@@ -1,18 +1,21 @@
 var weightRepo = require('../data/weightsRepository');
 
 function getUserWeights(req, res) {
-    weightRepo.findByUser(req.user)
+    weightRepo.findByUser(req.user.id)
         .then(function (weights) {
             if (weights.length >= 1) {
-                return res.json(weights);
+                return res.json({weights: weights, success: true});
             }
             return res.json({
-                message: "Could not find weights for user " + req.user.name + "."
+                message: "Could not find weights for user.",
+                success: true
             });
         })
         .catch(function (error) {
             return res.json({
-                message: "Error retrieving weights for user " + req.user.name + "."
+                message: "Error retrieving weights for user.",
+                error: error,
+                success: false
             });
         });
 }
@@ -23,21 +26,19 @@ function addWeight(req, res) {
     if (weight) {
         weightRepo.addWeight(req.user.id, weight)
             .then(function (weight) {
-                if (weight) {
-                    return res.json(weight);
-                }
-                return res.json({
-                    message: "Could not add weight for user " + req.user.name + "."
-                });
+                return res.json({weight: weight, success: true});
             })
             .catch(function (error) {
                 return res.json({
-                    message: "Error adding weight for user " + req.user.name + "."
+                    message: "Error adding weight for user.",
+                    error: error,
+                    success: false
                 });
             });
     } else {
         return res.json({
-            message: "Weight not given" + "."
+            message: "Weight not given" + ".",
+            success: false
         });
     }
 }

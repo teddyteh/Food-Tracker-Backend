@@ -1,6 +1,14 @@
 var db = require('../models');
 
-var WeightsRepository = {
+var FoodsRepository = {
+    findById: function (id) {
+        return db.Food.find({
+            where: {
+                id: id
+            }
+        })
+    },
+
     findByPage: function (pageNumber) {
         var foodsPerPage = 20;
         return db.Food.findAll({
@@ -18,4 +26,4 @@ var WeightsRepository = {
     }
 }
 
-module.exports = WeightsRepository;
+module.exports = FoodsRepository;

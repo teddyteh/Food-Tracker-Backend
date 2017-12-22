@@ -6,16 +6,19 @@ function getUserEntries(req, res) {
     entryRepo.findByUser(user.id)
         .then(function (entries) {
             if (entries.length >= 1) {
-                return res.json(entries);
+                return res.json({entries: entries, success: true});
             } else {
                 return res.json({
-                    message: "No entries found for user " + user.name + "."
+                    message: "Could not find entries for user.",
+                    success: true
                 });
             }
         })
         .catch(function (error) {
             return res.json({
-                message: "Error retrieving entries for user " + user.name + "."
+                message: "Error retrieving entries for user.",
+                error: error,
+                success: false
             });
         });
 }
@@ -28,18 +31,20 @@ function addEntry(req, res) {
     if (food && serving) {
         entryRepo.addEntry(user.id, food, serving)
             .then(function (entry) {
-                if (entry) {
-                    return res.json(entry);
-                }
-                return res.json({
-                    message: "Could not add entry for user " + name + "."
-                });
+                return res.json({entry: entry, success: true});
             })
             .catch(function (error) {
                 return res.json({
-                    message: "Error adding entry for user " + user.name + "."
+                    message: "Error adding entry for user " + user.name + ".",
+                    error: error,
+                    succss: false
                 });
             });
+    } else {
+        return res.json({
+            message: "Food or serving not given.",
+            success: false
+        });
     }
 }
 

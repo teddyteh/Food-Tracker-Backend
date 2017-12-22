@@ -1,8 +1,8 @@
 {
-    "name": "Food Tracker API documentation",
-    "version": "1.0.0",
-    "description": "API for Food Tracker backend",
-    "template": {
-        "forceLanguage": "en"
-    }
+  "name": "Food Tracker API documentation",
+  "version": "1.0.0",
+  "description": "API for Food Tracker backend",
+  "template": {
+    "forceLanguage": "en"
+  }
 }

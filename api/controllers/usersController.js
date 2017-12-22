@@ -1,58 +1,27 @@
-var jwt = require('jsonwebtoken'),
-    userRepo = require('../data/usersRepository'),
-    bcrypt = require('bcrypt');;
+var localAccountsRepo = require('../data/localAccountsRepository');
 
 function register(req, res) {
     var user = req.body.user;
 
-    if (user) {
-        userRepo.register(user, function (newUser) {
-            if (newUser) {
-                console.log("[NEW ACCOUNT] " + newUser.first_name + " " + newUser.last_name + " has registered");
+    if (user && user.email && user.password) {
+        localAccountsRepo.register(user, function (result) {
+            if (result.success) {
                 return res.json({
+                    user: result.localAccount,
                     success: true
                 });
             } else {
                 return res.json({
-                    message: "Error registering user."
+                    message: "Error registering user.",
+                    success: false
                 });
             }
         });
-    }
-}
-
-function login(req, res) {
-    var email = req.body.email;
-    var password = req.body.password;
-
-    if (email && password) {
-        userRepo.findByEmail(email)
-            .then(function (user) {
-                if (user) {
-                    if (bcrypt.compareSync(password, user.password)) {
-                        return res.json({
-                            token: jwt.sign({
-                                id: user.id,
-                                name: user.first_name + " " + user.last_name,
-                                email: user.email
-                            }, 'secret', {
-                                expiresIn: '1h'
-                            }),
-                            success: true
-                        });
-                    } else {
-                        // Wrong password
-                        return res.status(401).json({
-                            message: "Authentication failed. Incorrect login details."
-                        });
-                    }
-                } else {
-                    // User doesn't exist
-                    return res.status(401).json({
-                        message: "Authentication failed. User doesn't exist."
-                    });
-                }
-            })
+    } else {
+        return res.json({
+            message: "User not given.",
+            success: false
+        });
     }
 }
 
@@ -77,6 +46,5 @@ function getUser(req, res) {
 
 module.exports = {
     register: register,
-    login: login,
     get: getUser
 };

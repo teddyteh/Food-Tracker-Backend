@@ -1,6 +1,6 @@
 module.exports = function (app) {
-  var user = require('../controllers/userController');
+    var user = require('../controllers/userController');
 
-  app.route('/register')
-    .get(user.register);
+    app.route('/register')
+        .get(user.register);
 };

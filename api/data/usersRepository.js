@@ -21,7 +21,7 @@ var UsersRepository = {
     },
 
     findByEmail: function (email) {
-        return db.User.find({
+        return db.UserProfile.find({
             where: {
                 email: email
             }

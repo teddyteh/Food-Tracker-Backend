@@ -1,17 +1,17 @@
 var db = require('../models');
 
 var WeightsRepository = {
-    findByUser: function (user) {
+    findByUser: function (userId) {
         return db.Weight.findAll({
             where: {
-                user: user
+                user_profile_id: userId
             }
         })
     },
 
-    addWeight: function(user, weight) {
+    addWeight: function (userId, weight) {
         return db.Weight.create({
-            user: user,
+            user_profile_id: userId,
             weight: weight
         });
     }
