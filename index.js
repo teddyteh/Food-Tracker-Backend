@@ -62,25 +62,29 @@ router.get('/', function (req, res) {
 
 // more routes for our API will happen here
 /**
- * @api {post} /register Register a user
+ * @api {post} /auth/register Register a local account
  * @apiName Register
- * @apiGroup User
+ * @apiGroup Auth
  * @apiParam {Object[]} user
+ * @apiParam {String} user.username Required
+ * @apiParam {String} user.password Required
  * @apiParam {String} user.first_name
  * @apiParam {String} user.last_name
  * @apiParam {String} user.email
- * @apiParam {String} user.password
+ * @apiParam {String} user.picture
+ * @apiParam {String} user.height
  */
-router.route('/register')
+router.route('/auth/register')
     .post(usersController.register);
 
 /**
- * @api {post} /login Login a user
+ * @api {post} /auth/login Login a local user
  * @apiName Login
+ * @apiGroup Auth
  * @apiParam {String} user.username
  * @apiParam {String} user.password
  */
-router.route('/login')
+router.route('/auth/login')
     .post(passport.authenticate('local'), function (req, res, next) {
         if (req.user) {
             // console.log(req.user);
@@ -90,9 +94,11 @@ router.route('/login')
         }
     });
 
-router.route('/register')
-    .post(usersController.register);
-
+/**
+ * @api {get} /auth/facebook Login with Facebook
+ * @apiName Login with Facebook
+ * @apiGroup Auth
+ */
 router.route('/auth/facebook')
     .get(passport.authenticate('facebook'));
 
@@ -105,6 +111,11 @@ router.route('/auth/facebook/callback')
         }
     })
 
+/**
+ * @api {get} /auth/google Login with Google
+ * @apiName Login with Google
+ * @apiGroup Auth
+ */
 router.route('/auth/google')
     .get(passport.authenticate('google', { scope: ['profile'] }));
 
@@ -116,16 +127,6 @@ router.route('/auth/google/callback')
             return res.status(401).json({message: 'Unauthorized user.'});
         }
     })
-
-
-// router.route('/test')
-//     .get(isLoggedIn, function (req, res, next) {
-//         if (req.user) {
-//             return res.json(req.user);
-//         } else {
-//             return res.status(401).json({message: 'Unauthorized user.'});
-//         }
-//     })
 
 /**
  * @api {get} /weights Get weights for a user
