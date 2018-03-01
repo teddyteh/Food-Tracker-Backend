@@ -50,7 +50,7 @@ var config = {
         app: {
             name: 'food-tracker'
         },
-        port: 3000,
+        port: 80,
         db: {
             base: "food_tracker",
             user: "root",
