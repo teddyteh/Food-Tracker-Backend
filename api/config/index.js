@@ -50,7 +50,7 @@ var config = {
         app: {
             name: 'food-tracker'
         },
-        port: 80,
+        port: process.env.PORT, // process.env.PORT lets the port be set by Heroku
         db: {
             base: "food_tracker",
             user: "root",
