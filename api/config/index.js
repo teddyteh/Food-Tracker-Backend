@@ -10,9 +10,9 @@ var config = {
         },
         port: 3000,
         db: {
-            database: "food_tracker",
+            base: "food_tracker",
             user: "root",
-            password: "Testest!2",
+            pass: "Testest!2",
             options: {
                 host: 'localhost',
                 port: 8887,

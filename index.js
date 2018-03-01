@@ -1,4 +1,4 @@
-var config = require('./api/config/config'),
+var config = require('./api/config/index'),
     db = require('./api/models'),
     passport = require('passport'),
     express = require('express'),
@@ -269,7 +269,7 @@ function startApp() {
             { name: 'Protein' },
             { name: 'Fat' },
         ])
-
+        
         db.ServingSize.bulkCreate([
             { name: 'cup', amount: 17.5 },
             { name: 'slice', amount: 25 }
