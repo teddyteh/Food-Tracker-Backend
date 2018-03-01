@@ -1,4 +1,6 @@
 var db = require('../models');
+var Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 var NutrientsRepository = {
     findById: function (id) {
@@ -9,15 +11,38 @@ var NutrientsRepository = {
         });
     },
 
+    findByIds: function (ids) {
+        return db.Nutrient.findAll({
+            where: {
+                id: {
+                    [Op.or]: ids
+                }
+            }
+        })
+    },
+
     findAll: function () {
         return db.Nutrient.findAll();
     },
 
     addNutrient: function (name, amount) {
         return db.Nutrient.create({
-            name: name,
-            amount: amount
+            name: name
         });
+    },
+
+    getNutrientIds: function (nutrients) {
+        return nutrients.map(currNutrient => currNutrient.id);
+    },
+
+    appendAmountToNutrientIds: function (fullNutrients, nutrientModels) {
+        for (let i = 0; i < fullNutrients.length; i++) {
+            nutrientModels[i].FoodNutrient = {
+                amount: fullNutrients[i].amount
+            }
+        }
+
+        return nutrientModels;
     }
 }
 

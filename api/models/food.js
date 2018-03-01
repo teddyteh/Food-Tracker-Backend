@@ -5,8 +5,10 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             autoIncrement: true,
         },
+        local_id: DataTypes.INTEGER,
         name: DataTypes.STRING,
-        description: DataTypes.STRING
+        description: DataTypes.STRING,
+        calories: DataTypes.FLOAT
     });
 
     Food.associate = function (models) {
@@ -15,6 +17,10 @@ module.exports = function (sequelize, DataTypes) {
         });
         Food.belongsToMany(models.Nutrient, {
             through: 'FoodNutrient',
+            foreignKey: 'food'
+        });
+        Food.belongsToMany(models.ServingSize, {
+            through: 'FoodServingSize',
             foreignKey: 'food'
         });
     };

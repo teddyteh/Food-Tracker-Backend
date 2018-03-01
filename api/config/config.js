@@ -30,6 +30,8 @@ var config = {
                 }
             }
         },
+        force: true,
+        secret: 'ilovefoodtracking',
         facebook: {
             clientID: '1551657021555940',
             clientSecret: '41c937034b0407d8e6fcd335b5c9e322',

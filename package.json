@@ -37,5 +37,8 @@
     "passport-local": "^1.0.0",
     "sequelize": "^4.26.0",
     "text-animation": "^1.2.7"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0"
   }
 }

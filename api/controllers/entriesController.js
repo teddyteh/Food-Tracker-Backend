@@ -31,6 +31,7 @@ function addEntry(req, res) {
     if (food && serving) {
         entryRepo.addEntry(user.id, food, serving)
             .then(function (entry) {
+                console.log("entry added " + JSON.stringify(entry));
                 return res.json({entry: entry, success: true});
             })
             .catch(function (error) {
@@ -48,7 +49,34 @@ function addEntry(req, res) {
     }
 }
 
+function addEntries(req, res) {
+    var user = req.user;
+    var entries = req.body.entries;
+
+    if (entries) {
+        entryRepo.addEntries(user.id, entries)
+            .then(function (entriesAdded) {
+                console.log("entriesAdded " + JSON.stringify(entriesAdded));
+                if (entriesAdded)
+                    return res.json({entries: entriesAdded, success: true});
+            })
+            .catch(function (error) {
+                return res.json({
+                    message: "Error adding entries for user " + user.name + ".",
+                    error: error,
+                    succss: false
+                });
+            });
+    } else {
+        return res.json({
+            message: "Entries not given.",
+            success: false
+        });
+    }
+}
+
 module.exports = {
     getUserEntries: getUserEntries,
-    addEntry: addEntry
+    addEntry: addEntry,
+    addEntries: addEntries
 };

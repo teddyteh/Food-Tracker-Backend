@@ -5,7 +5,7 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             autoIncrement: true,
         },
-        serving: DataTypes.FLOAT
+        quantity: DataTypes.FLOAT
     });
 
     Entry.associate = function (models) {
@@ -14,6 +14,9 @@ module.exports = function (sequelize, DataTypes) {
         });
         Entry.belongsTo(models.Food, {
             foreignKey: 'food'
+        });
+        Entry.belongsTo(models.ServingSize, {
+            foreignKey: 'serving_size'
         });
     };
 

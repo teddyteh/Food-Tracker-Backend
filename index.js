@@ -10,8 +10,9 @@ var config = require('./api/config/config'),
     foodsController = require('./api/controllers/foodsController.js'),
     entriesController = require('./api/controllers/entriesController.js'),
     nutrientsController = require('./api/controllers/nutrientsController.js'),
+    servingsController = require('./api/controllers/servingsController.js'),
     bodyParser = require('body-parser'),
-    jsonWebToken = require('jsonwebtoken');
+    jwt = require('jsonwebtoken');
 
 var app = express();
 
@@ -22,39 +23,52 @@ require('./api/config/express')(app, express, passport, config);
 // =============================================================================
 var router = express.Router(); // get an instance of the express Router
 
-// middleware to use for all requests
-// router.use(function (req, res, next) {
-//     console.log('Something is happening.');
-//
-//     if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT') {
-//         jsonWebToken.verify(req.headers.authorization.split(' ')[1], 'secret', function (err, decode) {
-//             if (err)
-//                 req.user = undefined;
-//
-//             req.user = decode;
-//
-//             // console.log(req.user);
-//
-//             next();
-//         });
-//     } else {
-//         req.user = undefined;
-//         next();
-//     }
-// });
+// Route middleware to verify a token
+router.use(function (req, res, next) {
+    // Decode token
+    if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT') {
+        jwt.verify(req.headers.authorization.split(' ')[1], config.secret, function (err, decode) {
+            if (err)
+                req.user = undefined;
 
-// route middleware to make sure a user is logged in
+            req.user = decode;
+
+            console.log("user " + req.user);
+
+            next();
+        });
+    } else {
+        req.user = undefined;
+        next();
+    }
+});
+
+// Check if user is logged in
 function isLoggedIn(req, res, next) {
-    // if user is authenticated in the session, carry on
-    if (req.isAuthenticated())
-        return next();
-
-    // if they aren't redirect them to the home page
-    res.json({ message: "Unauthorized." });
+    if (req.isAuthenticated()) {
+        next();
+    }
+    else {
+        res.status(401).json({ message: "Unauthorized." });
+    }
 }
 
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function (req, res) {
+function createToken(req) {
+    var payload = {
+        id: req.user.id
+    };
+
+    var token = jwt.sign(payload, config.secret, {
+        expiresIn : 60*60*24
+    });
+
+    console.log("token " + token);
+
+    return token;
+}
+
+// Test route
+router.get('/', isLoggedIn, function (req, res) {
     res.json({
         message: 'Welcome to our api!'
     });
@@ -88,7 +102,7 @@ router.route('/auth/login')
     .post(passport.authenticate('local'), function (req, res, next) {
         if (req.user) {
             // console.log(req.user);
-            return res.json({ message: "local" });
+            return createToken(req);
         } else {
             return res.status(401).json({message: 'Unauthorized user.'});
         }
@@ -105,7 +119,9 @@ router.route('/auth/facebook')
 router.route('/auth/facebook/callback')
     .get(passport.authenticate('facebook', {failureRedirect: '/api/auth/facebook'}), function (req, res, next) {
         if (req.user) {
-            return res.json({ message: "facebook" });
+            // Redirect user back to the mobile app using Linking with a custom protocol OAuthLogin
+            res.redirect('OAuthLogin://login?token=' + createToken(req));
+            // return res.json({ message: "facebook" });
         } else {
             return res.status(401).json({message: 'Unauthorized user.'});
         }
@@ -122,16 +138,78 @@ router.route('/auth/google')
 router.route('/auth/google/callback')
     .get(passport.authenticate('google', {failureRedirect: '/api/auth/google'}), function (req, res, next) {
         if (req.user) {
-            return res.json({ message: "google" });
+            res.redirect('OAuthLogin://login?token=' + createToken(req));
         } else {
             return res.status(401).json({message: 'Unauthorized user.'});
         }
     })
 
 /**
+ * @api {get} /nutrients Get all nutrients
+ * @apiName Get all nutrients
+ * @apiGroup Nutrient
+ */
+router.route('/nutrients')
+    .post(nutrientsController.getNutrients);
+
+/**
+ * @api {get} /servingSizes Get all serving sizes
+ * @apiName Get all serving sizes
+ * @apiGroup ServingSizes
+ */
+router.route('/servingSizes')
+    .post(servingsController.getServingSizes);
+
+/**
+ * @api {post} /addFood Add or update a food
+ * @apiName Add food
+ * @apiGroup Food
+ * @apiParam {String} localId
+ * @apiParam {String} name
+ * @apiParam {String} description
+ * @apiParam {String} calories
+ * @apiParam {Object[]} nutrients array of existing Nutrient objects
+ * @apiParam {String} servingSizes array of existing ServingSize objects
+ */
+router.route('/addOrUpdateFood')
+    .post(isLoggedIn, foodsController.addOrUpdateFood);
+
+/**
+ * @api {get} /food Get list of food
+ * @apiName Get list of food
+ * @apiGroup Food
+ * @apiParam {Integer} pageNumber
+ */
+router.route('/food')
+    .get(isLoggedIn, foodsController.getFood);
+
+/**
+ * @api {post} /addEntries Add entries for a user
+ * @apiName Add entries
+ * @apiGroup Entry
+ * @apiParam {Object[]} entries
+ * @apiParam {Object[]} entries.food
+ * @apiParam {Integer} entries.food.local_id
+ * @apiParam {Integer} entries.food.online_id
+ * @apiParam {Integer} entries.servingSize
+ * @apiParam {Integer} entries.quantity
+ * {"food":{"local_id":1,"online_id":1},"servingSize":2,"quantity":1}
+ */
+router.route('/addEntries')
+    .post(isLoggedIn, entriesController.addEntries);
+
+/**
+ * @api {get} /entries Get entries for a user
+ * @apiName Get entries
+ * @apiGroup Entry
+ */
+router.route('/entries')
+    .post(isLoggedIn, entriesController.getUserEntries);
+
+/**
  * @api {get} /weights Get weights for a user
  * @apiName Get weights
- * @apiGroup Weights
+ * @apiGroup Weight
  */
 router.route('/weights')
     .get(isLoggedIn, weightsController.getUserWeights);
@@ -139,61 +217,16 @@ router.route('/weights')
 /**
  * @api {post} /addWeight Add weight for a user
  * @apiName Add weight
- * @apiGroup Weights
+ * @apiGroup Weight
  * @apiParam {Float} weight
  */
 router.route('/addWeight')
     .post(isLoggedIn, weightsController.addWeight);
 
 /**
- * @api {get} /foods Get foods
- * @apiName Get foods
- * @apiGroup Foods
- * @apiParam {Integer} pageNumber
- */
-router.route('/foods')
-    .get(isLoggedIn, foodsController.getFoods);
-
-/**
- * @api {post} /addFood Add a food
- * @apiName Add food
- * @apiGroup Foods
- * @apiParam {String} name
- * @apiParam {String} description
- */
-router.route('/addFood')
-    .post(isLoggedIn, foodsController.addFood);
-
-/**
- * @api {get} /entries Get entries for a user
- * @apiName Get entries
- * @apiGroup Entries
- */
-router.route('/entries')
-    .post(isLoggedIn, entriesController.getUserEntries);
-
-/**
- * @api {post} /addEntry Add entry for a user
- * @apiName Add entry
- * @apiGroup Entries
- * @apiParam {Integer} food
- * @apiParam {Float} serving
- */
-router.route('/addEntry')
-    .post(isLoggedIn, entriesController.addEntry);
-
-/**
- * @api {get} /nutrients Get all nutrients
- * @apiName Get all nutrients
- * @apiGroup Nutrients
- */
-router.route('/nutrients')
-    .post(isLoggedIn, nutrientsController.getNutrients);
-
-/**
  * @api {post} /addNutrient Add nutrient
  * @apiName Add nutrient
- * @apiGroup Nutrients
+ * @apiGroup Nutrient
  * @apiParam {String} name
  */
 router.route('/addNutrient')
@@ -202,7 +235,7 @@ router.route('/addNutrient')
 /**
  * @api {get} /foodNutrient Get nutrients for a food
  * @apiName Get nutrients for a food
- * @apiGroup FoodNutrients
+ * @apiGroup FoodNutrient
  * @apiParam {Integer} food
  */
 router.route('/foodNutrient')
@@ -211,7 +244,7 @@ router.route('/foodNutrient')
 /**
  * @api {post} /addFoodNutrient Add nutrient for a food
  * @apiName Add nutrient for a food
- * @apiGroup FoodNutrients
+ * @apiGroup FoodNutrient
  * @apiParam {Integer} food
  * @apiParam {Integer} nutrient
  * @apiParam {Float} amount
@@ -223,13 +256,25 @@ router.route('/addFoodNutrient')
 // all of our routes will be prefixed with /api
 app.use('/api', router);
 
-db.sequelize.sync({force: true})
+db.sequelize.sync({force: config.force})
     .then(startApp)
     .catch(function (e) {
         throw new Error(e);
     });
 
 function startApp() {
+    if (config.force) {
+        db.Nutrient.bulkCreate([
+            { name: 'Carbs' },
+            { name: 'Protein' },
+            { name: 'Fat' },
+        ])
+
+        db.ServingSize.bulkCreate([
+            { name: 'cup', amount: 17.5 },
+            { name: 'slice', amount: 25 }
+        ])
+    }
     // START THE SERVER
     // =============================================================================
     figlet('Food Diary', function(err, data) {

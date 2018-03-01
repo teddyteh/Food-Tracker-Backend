@@ -1,12 +1,13 @@
 module.exports = function (sequelize, DataTypes) {
-    var FoodNutrient = sequelize.define('FoodNutrient', {
+    var Serving = sequelize.define('ServingSize', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
         },
-        amount: DataTypes.FLOAT,
+        name: DataTypes.STRING,
+        amount: DataTypes.FLOAT
     });
 
-    return FoodNutrient;
+    return Serving;
 };
