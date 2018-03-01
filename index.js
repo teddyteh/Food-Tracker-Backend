@@ -269,7 +269,7 @@ function startApp() {
             { name: 'Protein' },
             { name: 'Fat' },
         ])
-        
+
         db.ServingSize.bulkCreate([
             { name: 'cup', amount: 17.5 },
             { name: 'slice', amount: 25 }
