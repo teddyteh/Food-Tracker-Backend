@@ -1,10 +1,9 @@
 {
   "name": "food-tracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for food tracker app",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,31 +18,19 @@
   "homepage": "https://github.com/teddyteh/Food-Tracker-Backend#readme",
   "dependencies": {
     "bcrypt": "^1.0.3",
-    "body-parser": "^1.18.2",
-    "compression": "^1.7.1",
-    "cookie-parser": "^1.4.3",
-    "cookie-session": "^2.0.0-beta.3",
-    "ejs": "^2.5.7",
     "express": "^4.16.2",
-    "express-api-doc": "0.0.12",
     "express-session": "^1.15.6",
     "figlet": "^1.2.0",
-    "glob": "^7.1.2",
-    "jsonwebtoken": "^8.1.0",
-    "method-override": "^2.3.10",
-    "morgan": "^1.9.0",
+    "jsonwebtoken": "^8.2.0",
     "mysql": "^2.15.0",
+    "mysql2": "^1.5.2",
     "passport": "^0.4.0",
     "passport-facebook": "^2.1.1",
     "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
-    "pg": "6.4.1",
+    "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.26.0",
-    "sequelize-heroku": "^1.0.0",
-    "text-animation": "^1.2.7"
-  },
-  "devDependencies": {
-    "babel": "^6.23.0"
+    "sequelize": "^4.35.1",
+    "sequelize-heroku": "^1.0.0"
   }
 }

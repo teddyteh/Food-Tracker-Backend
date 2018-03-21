@@ -33,7 +33,8 @@ router.use(function (req, res, next) {
 
             req.user = decode;
 
-            console.log("user " + req.user);
+            if (req.user)
+                console.log("Request from " + JSON.stringify(req.user));
 
             next();
         });
@@ -49,7 +50,7 @@ function isLoggedIn(req, res, next) {
         next();
     }
     else {
-        res.status(401).json({ message: "Unauthorized." });
+        res.status(401).json({message: "Unauthorized."});
     }
 }
 
@@ -59,10 +60,10 @@ function createToken(req) {
     };
 
     var token = jwt.sign(payload, config.secret, {
-        expiresIn : 60*60*24
+        expiresIn: 60 * 60 * 24
     });
 
-    console.log("token " + token);
+    console.log("[createToken] " + token);
 
     return token;
 }
@@ -133,7 +134,7 @@ router.route('/auth/facebook/callback')
  * @apiGroup Auth
  */
 router.route('/auth/google')
-    .get(passport.authenticate('google', { scope: ['profile'] }));
+    .get(passport.authenticate('google', {scope: ['profile']}));
 
 router.route('/auth/google/callback')
     .get(passport.authenticate('google', {failureRedirect: '/api/auth/google'}), function (req, res, next) {
@@ -161,7 +162,7 @@ router.route('/servingSizes')
     .post(servingsController.getServingSizes);
 
 /**
- * @api {post} /addFood Add or update a food
+ * @api {post} /addOrUpdateFood Add or update a food
  * @apiName Add food
  * @apiGroup Food
  * @apiParam {String} localId
@@ -265,19 +266,19 @@ db.sequelize.sync({force: config.force})
 function startApp() {
     if (config.force) {
         db.Nutrient.bulkCreate([
-            { name: 'Carbs' },
-            { name: 'Protein' },
-            { name: 'Fat' },
+            {name: 'Carbs'},
+            {name: 'Protein'},
+            {name: 'Fat'},
         ])
 
         db.ServingSize.bulkCreate([
-            { name: 'cup', amount: 17.5 },
-            { name: 'slice', amount: 25 }
+            {name: 'cup', amount: 17.5},
+            {name: 'slice', amount: 25}
         ])
     }
     // START THE SERVER
     // =============================================================================
-    figlet('Food Diary', function(err, data) {
+    figlet('Food Diary', function (err, data) {
         if (err) {
             console.log('Something went wrong...');
             console.dir(err);

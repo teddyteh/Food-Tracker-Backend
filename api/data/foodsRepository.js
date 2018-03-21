@@ -48,7 +48,7 @@ var FoodsRepository = {
         var success = true;
 
         nutrients.forEach(function (currNutrient) {
-            food.addNutrient(currNutrient.id, { through: { amount: currNutrient.amount }})
+            food.addNutrient(currNutrient.id, {through: {amount: currNutrient.amount}})
                 .then(function (result) {
                     if (result) {
                         result = result[0];
@@ -125,7 +125,6 @@ var FoodsRepository = {
     removeAllFoodServingSizes: function (food) {
         return food.setServingSizes([]);
     },
-
 
     updateUserFood: function (existingFood, name, description, calories) {
         return existingFood.update({

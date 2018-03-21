@@ -77,13 +77,13 @@ var config = {
         facebook: {
             clientID: '1551657021555940',
             clientSecret: '41c937034b0407d8e6fcd335b5c9e322',
-            callbackURL: 'http://localhost:3000/api/auth/facebook/callback',
+            callbackURL: 'https://food-tracker-.herokuapp.com/api/auth/facebook/callback',
             profileFields: ['id', 'name', 'displayName', 'picture', 'email'],
         },
         google: {
             clientID: '1041270276579-667cgpo6qhp5pbjjhtrunkh6cm61ef5g.apps.googleusercontent.com',
             clientSecret: 'yJUnqyOA8pUF9TCB4acqytuw',
-            callbackURL: 'http://localhost:3000/api/auth/google/callback',
+            callbackURL: 'https://food-tracker-.herokuapp.com/api/auth/google/callback',
         }
     }
 }

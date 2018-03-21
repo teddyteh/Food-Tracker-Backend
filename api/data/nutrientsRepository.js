@@ -12,11 +12,11 @@ var NutrientsRepository = {
     },
 
     findByIds: function (ids) {
+        console.log("[nutrientsRepo findByIds()] ids " + JSON.stringify(ids));
+
         return db.Nutrient.findAll({
             where: {
-                id: {
-                    [Op.or]: ids
-                }
+                $or: ids
             }
         })
     },
@@ -32,7 +32,16 @@ var NutrientsRepository = {
     },
 
     getNutrientIds: function (nutrients) {
-        return nutrients.map(currNutrient => currNutrient.id);
+        let mappedNutrients = [];
+
+        for (let i = 0; i < nutrients.length; i++) {
+            let item = {};
+            item.id = nutrients[i].id;
+
+            mappedNutrients.push(item);
+        }
+
+        return mappedNutrients;
     },
 
     appendAmountToNutrientIds: function (fullNutrients, nutrientModels) {

@@ -13,7 +13,7 @@ var EntriesRepository = {
         return db.Entry.create({
             user: user,
             food: food,
-            servingSize:serving,
+            servingSize: serving,
             quantity: quantity
         });
     },
@@ -23,8 +23,8 @@ var EntriesRepository = {
         // mapped entries look like this [{"user": 1, "food":1,"serving_size":1,"quantity":1}]
         let mappedEntries = this.mapEntries(user, entries);
 
-        console.log("originalEntries " + JSON.stringify(entries));
-        console.log("mappedEntries " + JSON.stringify(mappedEntries));
+        console.log("[entriesrepo addEntries()] originalEntries " + JSON.stringify(entries));
+        console.log("[entriesrepo addEntries()] mappedEntries " + JSON.stringify(mappedEntries));
 
         if (mappedEntries && mappedEntries.length > 0) {
             return db.Entry.bulkCreate(mappedEntries);

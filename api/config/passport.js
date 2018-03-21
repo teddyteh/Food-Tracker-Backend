@@ -47,7 +47,7 @@ module.exports = function (app, passport, db, config) {
 
                     } else {
                         // Existing user
-                        db.UserProfile.findById(user.get('user_profile_id'))
+                        db.UserProfile.findOne({where: {id: user.get('user_profile_id')}})
                             .then(function (userProfile) {
                                 console.log("User found " + JSON.stringify(userProfile.toJSON()));
                                 return cb(null, userProfile.toJSON());

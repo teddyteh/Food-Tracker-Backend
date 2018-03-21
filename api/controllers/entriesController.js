@@ -31,7 +31,8 @@ function addEntry(req, res) {
     if (food && serving) {
         entryRepo.addEntry(user.id, food, serving)
             .then(function (entry) {
-                console.log("entry added " + JSON.stringify(entry));
+                console.log("[entriesController - addEntry()] entryAdded " + JSON.stringify(entry));
+
                 return res.json({entry: entry, success: true});
             })
             .catch(function (error) {
@@ -56,7 +57,7 @@ function addEntries(req, res) {
     if (entries) {
         entryRepo.addEntries(user.id, entries)
             .then(function (entriesAdded) {
-                console.log("entriesAdded " + JSON.stringify(entriesAdded));
+                console.log("[entriesController - addEntry()] entriesAdded " + JSON.stringify(entriesAdded));
                 if (entriesAdded)
                     return res.json({entries: entriesAdded, success: true});
             })

@@ -90,13 +90,13 @@ function addOrUpdateFood(req, res) {
         });
     }
 
-    console.log("calories " + JSON.stringify(calories));
-    console.log("nutrients " + JSON.stringify(nutrients));
-    console.log("serving sizes " + JSON.stringify(servingSizes));
+    console.log("[foodsController - addOrUpdareFood()] calories " + JSON.stringify(calories));
+    console.log("[foodsController - addOrUpdareFood()] nutrients " + JSON.stringify(nutrients));
+    console.log("[foodsController - addOrUpdareFood()] servingSizes " + JSON.stringify(servingSizes));
 
     foodRepo.findUserFood(user.id, localId)
         .then(function (existingFood) {
-            console.log("existingFood " + existingFood);
+            console.log("[foodsController - addOrUpdareFood()] existingFood " + existingFood);
 
             if (!existingFood) {
                 // New food
@@ -142,19 +142,24 @@ function addOrUpdateFood(req, res) {
 function addFoodNutrients(foodModel, nutrients) {
     if (nutrients) {
         // Extract nutrient ids from full nutrients
-        let nutrientsIds = nutrientRepo.getNutrientIds(nutrients);
+        let nutrientIds = nutrientRepo.getNutrientIds(nutrients);
 
         // Get nutrient models by ids
-        nutrientRepo.findByIds(nutrientsIds)
+        nutrientRepo.findByIds(nutrientIds)
             .then(function (nutrientsFound) {
+                console.log("[foodsController addFoodNutrients()] nutrientsFound");
                 // Add property with FoodNutrient to the nutrient models, containing the amounts that go in the FoodNutrient join table
-                let nutrientWithAmount = nutrientRepo.appendAmountToNutrientIds(nutrients, nutrientsFound)
+                let nutrientsWithAmount = nutrientRepo.appendAmountToNutrientIds(nutrients, nutrientsFound)
+                console.log("nutrientsWithAmount " + JSON.stringify(nutrientsWithAmount));
 
                 // Actually add the nutrients
-                foodRepo.addNutrientsForFood2(foodModel, nutrientWithAmount)
+                foodRepo.addNutrientsForFood2(foodModel, nutrientsWithAmount)
                     .then(function (nutrientsAdded) {
-                        console.log("nutrients added " + JSON.stringify(nutrientsAdded));
+                        console.log("[foodsController addFoodNutrients()] nutrientsAdded " + JSON.stringify(nutrientsAdded));
                     });
+            })
+            .catch(function (error) {
+                console.log("[foodsController addFoodNutrients()] error " + JSON.stringify(error));
             })
     }
 }
@@ -162,15 +167,19 @@ function addFoodNutrients(foodModel, nutrients) {
 function addFoodServingSizes(foodModel, servingSizes) {
     if (servingSizes) {
         // Extract food serving size ids from full serving sizes
-        let nutrientsIds = servingRepo.getServingSizeIds(servingSizes);
+        let servingSizeIds = servingRepo.getServingSizeIds(servingSizes);
 
         // Actually add the serving sizes
-        foodRepo.addServingSizes(foodModel, nutrientsIds)
+        foodRepo.addServingSizes(foodModel, servingSizeIds)
             .then(function (servingSizesAdded) {
-                console.log("servingSizes added " + JSON.stringify(servingSizesAdded));
-            });
+                console.log("[foodsController addFoodServingSizes()] serving sizes added " + JSON.stringify(servingSizesAdded));
+            })
+            .catch(function (error) {
+                console.log("[foodsController addFoodServingSizes()] error " + JSON.stringify(error));
+            })
     }
 }
+
 module.exports = {
     getFood: getFood,
     addOrUpdateFood: addOrUpdateFood
