@@ -1,4 +1,6 @@
-var db = require('../models');
+var db = require('../models'),
+    Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 var FoodsRepository = {
     findById: function (id) {
@@ -9,10 +11,11 @@ var FoodsRepository = {
         })
     },
 
-    findByLocalId: function (id) {
+    findByLocalId: function (user, id) {
         return db.Food.find({
             where: {
-                id: id
+                local_id: id,
+                created_by: user
             }
         })
     },
@@ -25,13 +28,30 @@ var FoodsRepository = {
         })
     },
 
-    findUserFood: function (user, userLocalFoodId) {
-        return db.Food.findOne({
+    findByUser: function (user) {
+        return db.Food.findAll({
             where: {
-                created_by: user,
-                local_id: userLocalFoodId
+                created_by: user
             }
         });
+    },
+
+    findUserFood: function (user, foodOnlineId, userLocalFoodId) {
+        if (foodOnlineId) {
+            return db.Food.findOne({
+                where: {
+                    created_by: user,
+                    [Op.or]: [{id: foodOnlineId}, {local_id: userLocalFoodId}]
+                }
+            });
+        } else {
+            return db.Food.findOne({
+                where: {
+                    created_by: user,
+                    local_id: userLocalFoodId
+                }
+            });
+        }
     },
 
     createFood: function (user, userLocalFoodId, name, description, calories) {
@@ -126,8 +146,9 @@ var FoodsRepository = {
         return food.setServingSizes([]);
     },
 
-    updateUserFood: function (existingFood, name, description, calories) {
+    updateUserFood: function (existingFood, localId, name, description, calories) {
         return existingFood.update({
+            local_id: localId,
             name: name,
             description: description,
             calories: calories

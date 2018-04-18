@@ -1,4 +1,5 @@
 var db = require('../models');
+var foodRepo = require('../data/foodsRepository');
 
 var EntriesRepository = {
     findByUser: function (user) {
@@ -7,6 +8,17 @@ var EntriesRepository = {
                 user: user
             }
         })
+    },
+
+    findByPage: function (user, page, entriesPerPage) {
+        return db.Entry.findAll({
+            where: {
+                user: user
+            },
+            limit: entriesPerPage,
+            offset: page * entriesPerPage,
+            order: "id desc"
+        });
     },
 
     addEntry: function (user, food, serving, quantity) {

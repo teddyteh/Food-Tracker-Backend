@@ -12,7 +12,7 @@ function register(req, res) {
                 });
             } else {
                 return res.json({
-                    message: "Error registering user.",
+                    message: result.error,
                     success: false
                 });
             }

@@ -2,6 +2,9 @@ var config = require('./api/config/index'),
     db = require('./api/models'),
     passport = require('passport'),
     express = require('express'),
+    app = express(),
+    http = require('http').Server(app),
+    io = require('socket.io')(http),
     figlet = require('figlet'),
 
     mainController = require('./api/controllers/mainController.js'),
@@ -14,8 +17,7 @@ var config = require('./api/config/index'),
     bodyParser = require('body-parser'),
     jwt = require('jsonwebtoken');
 
-var app = express();
-
+require('./api/sockets')(io);
 require('./api/config/passport')(app, passport, db, config);
 require('./api/config/express')(app, express, passport, config);
 
@@ -50,6 +52,7 @@ function isLoggedIn(req, res, next) {
         next();
     }
     else {
+        console.log("wat");
         res.status(401).json({message: "Unauthorized."});
     }
 }
@@ -96,17 +99,15 @@ router.route('/auth/register')
  * @api {post} /auth/login Login a local user
  * @apiName Login
  * @apiGroup Auth
- * @apiParam {String} user.username
- * @apiParam {String} user.password
+ * @apiParam {String} email
+ * @apiParam {String} password
  */
 router.route('/auth/login')
-    .post(passport.authenticate('local'), function (req, res, next) {
-        if (req.user) {
-            // console.log(req.user);
-            return createToken(req);
-        } else {
-            return res.status(401).json({message: 'Unauthorized user.'});
-        }
+    .post(passport.authenticate('local', { failWithError: true }), function (req, res, next) {
+        if (req.user)
+            return res.json({ token: createToken(req), success: true });
+    }, function(err, req, res, next) {
+        return res.status(401).json({ message: 'Unauthorized user.' });
     });
 
 /**
@@ -119,9 +120,11 @@ router.route('/auth/facebook')
 
 router.route('/auth/facebook/callback')
     .get(passport.authenticate('facebook', {failureRedirect: '/api/auth/facebook'}), function (req, res, next) {
+        console.log("facebook req.user " + JSON.stringify(req.user));
+
         if (req.user) {
             // Redirect user back to the mobile app using Linking with a custom protocol OAuthLogin
-            res.redirect('OAuthLogin://login?token=' + createToken(req));
+            res.redirect('OAuthLogin://login?email=' + req.user.email + '&source=facebook&token=' + createToken(req));
             // return res.json({ message: "facebook" });
         } else {
             return res.status(401).json({message: 'Unauthorized user.'});
@@ -134,12 +137,13 @@ router.route('/auth/facebook/callback')
  * @apiGroup Auth
  */
 router.route('/auth/google')
-    .get(passport.authenticate('google', {scope: ['profile']}));
+    .get(passport.authenticate('google', {scope: ['profile', 'email']}));
 
 router.route('/auth/google/callback')
     .get(passport.authenticate('google', {failureRedirect: '/api/auth/google'}), function (req, res, next) {
+        console.log("google user " + JSON.stringify(req.user));
         if (req.user) {
-            res.redirect('OAuthLogin://login?token=' + createToken(req));
+            res.redirect('OAuthLogin://login?email=' + req.user.email + '&source=google&token=' + createToken(req));
         } else {
             return res.status(401).json({message: 'Unauthorized user.'});
         }
@@ -253,6 +257,15 @@ router.route('/foodNutrient')
 router.route('/addFoodNutrient')
     .post(isLoggedIn, nutrientsController.addNutrientForFood);
 
+router.route('/syncEntries')
+    .post(isLoggedIn, entriesController.syncEntries);
+
+router.route('getUserFood')
+    .post(isLoggedIn, foodsController.getUserFood);
+
+router.route('getEntriesByPage')
+    .post(isLoggedIn, entriesController.getEntriesByPage);
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
@@ -286,7 +299,7 @@ function startApp() {
         }
         process.stdout.write('\033c');
         console.log(data);
-        app.listen(config.port, function () {
+        http.listen(config.port, function () {
             console.log('Magic happens on port ' + config.port);
         });
     });

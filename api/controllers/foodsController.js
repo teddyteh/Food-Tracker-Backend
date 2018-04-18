@@ -31,6 +31,22 @@ function getFood(req, res) {
     }
 }
 
+function getUserFood(req, res) {
+    var user = req.user;
+
+    foodRepo.findAllUserFood(user)
+        .then(function (food) {
+            return res.json({food: food, success: true});
+        })
+        .catch(function (error) {
+            return res.json({
+                message: "Error adding food.",
+                error: error,
+                success: false
+            });
+        });
+}
+
 function addFoodd(req, res) {
     var user = req.user;
     var name = req.body.name;
@@ -59,6 +75,7 @@ function addFoodd(req, res) {
 function addOrUpdateFood(req, res) {
     var user = req.user;
     var localId = req.body.localId;
+    var onlineId = req.body.onlineId;
     var name = req.body.name;
     var description = req.body.description;
     var calories = req.body.calories;
@@ -94,7 +111,7 @@ function addOrUpdateFood(req, res) {
     console.log("[foodsController - addOrUpdareFood()] nutrients " + JSON.stringify(nutrients));
     console.log("[foodsController - addOrUpdareFood()] servingSizes " + JSON.stringify(servingSizes));
 
-    foodRepo.findUserFood(user.id, localId)
+    foodRepo.findUserFood(user.id, onlineId, localId)
         .then(function (existingFood) {
             console.log("[foodsController - addOrUpdareFood()] existingFood " + existingFood);
 
@@ -115,7 +132,7 @@ function addOrUpdateFood(req, res) {
                     })
             } else {
                 // Update food
-                foodRepo.updateUserFood(existingFood, name, description, calories)
+                foodRepo.updateUserFood(existingFood, localId, name, description, calories)
                     .then(function (updatedFood) {
 
                         if (updatedFood) {
@@ -182,5 +199,6 @@ function addFoodServingSizes(foodModel, servingSizes) {
 
 module.exports = {
     getFood: getFood,
+    getUserFood: getUserFood,
     addOrUpdateFood: addOrUpdateFood
 };

@@ -1,4 +1,6 @@
 var entryRepo = require('../data/entriesRepository');
+var foodRepo = require('../data/foodsRepository');
+var servingsRepo = require('../data/servingsRepository');
 
 function getUserEntries(req, res) {
     var user = req.user;
@@ -76,8 +78,66 @@ function addEntries(req, res) {
     }
 }
 
+function getEntriesByPage(req, res) {
+    var user = req.user;
+    var page = req.body.page;
+
+    if (page) {
+        entryRepo.findByPage(user.id, page)
+            .then(function (pageEntries) {
+                console.log("[entriesController - findByPage()] entriesAdded " + JSON.stringify(pageEntries));
+
+                if (pageEntries)
+                    return res.json({entries: pageEntries, success: true});
+            })
+            .catch(function (error) {
+                return res.json({
+                    message: "Error getting entries for user " + user.name + ".",
+                    error: error,
+                    succss: false
+                });
+            });
+    } else {
+        return res.json({
+            message: "Entries not given.",
+            success: false
+        });
+    }
+}
+
+function syncEntries(req, res) {
+    var user = req.user;
+
+    // First get a list of user's food
+    foodRepo.findByUser(user)
+        .then(function (userFood) {
+
+            // Get all serving sizes
+            servingsRepo.findAll()
+                .then(function (servingSizes) {
+
+                    // Get entries
+                    entryRepo.findByPage(user, 1, 100)
+                        .then(function (pageEntries) {
+
+                            res.json({
+                                food: userFood,
+                                servingSizes: servingSizes,
+                                entries: pageEntries,
+                                success: true
+                            });
+
+                        });
+
+                });
+
+        });
+}
+
 module.exports = {
     getUserEntries: getUserEntries,
     addEntry: addEntry,
-    addEntries: addEntries
+    addEntries: addEntries,
+    getEntriesByPage: getEntriesByPage,
+    syncEntries: syncEntries
 };
