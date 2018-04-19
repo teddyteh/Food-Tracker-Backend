@@ -39,8 +39,8 @@ var config = {
             profileFields: ['id', 'name', 'displayName', 'picture', 'email'],
         },
         google: {
-            clientID: '1041270276579-667cgpo6qhp5pbjjhtrunkh6cm61ef5g.apps.googleusercontent.com',
-            clientSecret: 'yJUnqyOA8pUF9TCB4acqytuw',
+            clientID: '213187711632-nafjbv1h2cvtcf4pcf7nav6p1i3sueim.apps.googleusercontent.com',
+            clientSecret: 'Q4lQgSJwYex6lUV31oKoKh9w',
             callbackURL: 'http://localhost:3000/api/auth/google/callback',
         }
     },
@@ -77,13 +77,13 @@ var config = {
         facebook: {
             clientID: '1551657021555940',
             clientSecret: '41c937034b0407d8e6fcd335b5c9e322',
-            callbackURL: 'https://food-tracker-.herokuapp.com/api/auth/facebook/callback',
+            callbackURL: 'https://foodtrackerpro.herokuapp.com/api/auth/facebook/callback',
             profileFields: ['id', 'name', 'displayName', 'picture', 'email'],
         },
         google: {
-            clientID: '1041270276579-667cgpo6qhp5pbjjhtrunkh6cm61ef5g.apps.googleusercontent.com',
-            clientSecret: 'yJUnqyOA8pUF9TCB4acqytuw',
-            callbackURL: 'https://food-tracker-.herokuapp.com/api/auth/google/callback',
+            clientID: '213187711632-nafjbv1h2cvtcf4pcf7nav6p1i3sueim.apps.googleusercontent.com',
+            clientSecret: 'Q4lQgSJwYex6lUV31oKoKh9w',
+            callbackURL: 'https://foodtrackerpro.herokuapp.com/api/auth/google/callback',
         }
     }
 }
