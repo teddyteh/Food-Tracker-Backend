@@ -58,7 +58,7 @@ var config = {
             options: {
                 host: 'localhost',
                 port: 8887,
-                dialect: 'mysql',
+                dialect: 'postgres',
 
                 pool: {
                     max: 5,

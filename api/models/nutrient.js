@@ -1,11 +1,9 @@
 module.exports = function (sequelize, DataTypes) {
     var Nutrient = sequelize.define('Nutrient', {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        name: DataTypes.STRING
+        name: {
+            type: DataTypes.STRING,
+            primaryKey: true
+        }
     });
 
     Nutrient.associate = function (models) {
