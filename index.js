@@ -299,7 +299,6 @@ function startApp() {
         }
         process.stdout.write('\033c');
         console.log(data);
-        console.log("database url " + process.env.DATABASE_URL);
         http.listen(config.port, function () {
             console.log('Magic happens on port ' + config.port);
         });
